@@ -1,3 +1,4 @@
+import { extractTextFromPdf } from './utils/pdf';
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Briefcase, Sparkles, AlertCircle, CheckCircle2, ChevronRight, Loader2, Copy, Check, Upload, Image as ImageIcon, X, File as FileIcon, Target, Globe, QrCode, ArrowLeft, Compass, Star, Map, MessageCircle, Search, User } from 'lucide-react';
@@ -33,23 +34,33 @@ export default function App() {
     });
   };
 
-  const handleResumeFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    if (file.type !== 'application/pdf') {
-      setError('请上传 PDF 格式的简历文件。');
-      return;
-    }
+const handleResumeFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    try {
-      const base64 = await fileToBase64(file);
-      setResumeFile({ base64, mimeType: file.type, name: file.name });
-      setError(null);
-    } catch (err) {
-      setError('读取 PDF 文件失败。');
-    }
-  };
+  if (file.type !== 'application/pdf') {
+    setError('请上传 PDF 格式的简历文件。');
+    return;
+  }
+
+  try {
+    const base64 = await fileToBase64(file);
+    setResumeFile({ base64, mimeType: file.type, name: file.name });
+
+    const extractedText = await extractTextFromPdf(file);
+
+    const cleanedText = extractedText
+      .replace(/\s+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    setResumeText(cleanedText);
+    setError(null);
+  } catch (err) {
+    console.error('读取 PDF 文件失败:', err);
+    setError('PDF 解析失败，请手动粘贴简历文字。');
+  }
+};
 
   const handleJobImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
