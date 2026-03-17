@@ -35,27 +35,81 @@ export async function analyzeResume(
     suggestions: basic.suggestions,
   });
 
-  let advanced = {
-    jobAnalysis: {},
-    careerAssessment: {},
-    metaphysicalAnalysis: {},
+  let advanced: any = {
+    jobAnalysis: {
+      positioning: '',
+      realWorkContent: [],
+      hiddenTalentPersona: [],
+    },
+    careerAssessment: {
+      strengths: [],
+      weaknesses: [],
+      suitableRoles: [],
+      testQuestions: [],
+    },
+    metaphysicalAnalysis: {
+      birthdayFound: false,
+      zodiac: '',
+      bazi: '',
+      suitableRoles: [],
+      auspiciousDirections: [],
+      guidance: '',
+    },
   };
 
   try {
-    advanced = await postJSON('/.netlify/functions/analyze-advanced', {
+    const advancedResult = await postJSON('/.netlify/functions/analyze-advanced', {
       resumeText,
       jobText,
     });
+
+    advanced = {
+      jobAnalysis: {
+        positioning: advancedResult?.jobAnalysis?.positioning ?? '',
+        realWorkContent: Array.isArray(advancedResult?.jobAnalysis?.realWorkContent)
+          ? advancedResult.jobAnalysis.realWorkContent
+          : [],
+        hiddenTalentPersona: Array.isArray(advancedResult?.jobAnalysis?.hiddenTalentPersona)
+          ? advancedResult.jobAnalysis.hiddenTalentPersona
+          : [],
+      },
+      careerAssessment: {
+        strengths: Array.isArray(advancedResult?.careerAssessment?.strengths)
+          ? advancedResult.careerAssessment.strengths
+          : [],
+        weaknesses: Array.isArray(advancedResult?.careerAssessment?.weaknesses)
+          ? advancedResult.careerAssessment.weaknesses
+          : [],
+        suitableRoles: Array.isArray(advancedResult?.careerAssessment?.suitableRoles)
+          ? advancedResult.careerAssessment.suitableRoles
+          : [],
+        testQuestions: Array.isArray(advancedResult?.careerAssessment?.testQuestions)
+          ? advancedResult.careerAssessment.testQuestions
+          : [],
+      },
+      metaphysicalAnalysis: {
+        birthdayFound: advancedResult?.metaphysicalAnalysis?.birthdayFound ?? false,
+        zodiac: advancedResult?.metaphysicalAnalysis?.zodiac ?? '',
+        bazi: advancedResult?.metaphysicalAnalysis?.bazi ?? '',
+        suitableRoles: Array.isArray(advancedResult?.metaphysicalAnalysis?.suitableRoles)
+          ? advancedResult.metaphysicalAnalysis.suitableRoles
+          : [],
+        auspiciousDirections: Array.isArray(advancedResult?.metaphysicalAnalysis?.auspiciousDirections)
+          ? advancedResult.metaphysicalAnalysis.auspiciousDirections
+          : [],
+        guidance: advancedResult?.metaphysicalAnalysis?.guidance ?? '',
+      },
+    };
   } catch (e) {
     console.warn('高级分析失败，跳过', e);
   }
 
   return {
-    matchScore: basic.matchScore,
-    analysis: basic.analysis,
-    deficiencies: basic.deficiencies,
-    suggestions: basic.suggestions,
-    optimizedResume: resume.optimizedResume,
+    matchScore: basic?.matchScore ?? 0,
+    analysis: basic?.analysis ?? '',
+    deficiencies: Array.isArray(basic?.deficiencies) ? basic.deficiencies : [],
+    suggestions: Array.isArray(basic?.suggestions) ? basic.suggestions : [],
+    optimizedResume: resume?.optimizedResume ?? '',
     jobAnalysis: advanced.jobAnalysis,
     careerAssessment: advanced.careerAssessment,
     metaphysicalAnalysis: advanced.metaphysicalAnalysis,
