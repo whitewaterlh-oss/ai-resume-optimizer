@@ -51,13 +51,47 @@ export async function analyzeResume(
   }
 
   return {
-    matchScore: basic.matchScore,
-    analysis: basic.analysis,
-    deficiencies: basic.deficiencies,
-    suggestions: basic.suggestions,
-    optimizedResume: resume.optimizedResume,
-    jobAnalysis: advanced.jobAnalysis,
-    careerAssessment: advanced.careerAssessment,
-    metaphysicalAnalysis: advanced.metaphysicalAnalysis,
-  };
-}
+  matchScore: basic?.matchScore ?? 0,
+  analysis: basic?.analysis ?? '',
+  deficiencies: Array.isArray(basic?.deficiencies) ? basic.deficiencies : [],
+  suggestions: Array.isArray(basic?.suggestions) ? basic.suggestions : [],
+  optimizedResume: resume?.optimizedResume ?? '',
+
+  jobAnalysis: {
+    positioning: advanced?.jobAnalysis?.positioning ?? '',
+    realWorkContent: Array.isArray(advanced?.jobAnalysis?.realWorkContent)
+      ? advanced.jobAnalysis.realWorkContent
+      : [],
+    hiddenTalentPersona: Array.isArray(advanced?.jobAnalysis?.hiddenTalentPersona)
+      ? advanced.jobAnalysis.hiddenTalentPersona
+      : [],
+  },
+
+  careerAssessment: {
+    strengths: Array.isArray(advanced?.careerAssessment?.strengths)
+      ? advanced.careerAssessment.strengths
+      : [],
+    weaknesses: Array.isArray(advanced?.careerAssessment?.weaknesses)
+      ? advanced.careerAssessment.weaknesses
+      : [],
+    suitableRoles: Array.isArray(advanced?.careerAssessment?.suitableRoles)
+      ? advanced.careerAssessment.suitableRoles
+      : [],
+    testQuestions: Array.isArray(advanced?.careerAssessment?.testQuestions)
+      ? advanced.careerAssessment.testQuestions
+      : [],
+  },
+
+  metaphysicalAnalysis: {
+    birthdayFound: advanced?.metaphysicalAnalysis?.birthdayFound ?? false,
+    zodiac: advanced?.metaphysicalAnalysis?.zodiac ?? '',
+    bazi: advanced?.metaphysicalAnalysis?.bazi ?? '',
+    suitableRoles: Array.isArray(advanced?.metaphysicalAnalysis?.suitableRoles)
+      ? advanced.metaphysicalAnalysis.suitableRoles
+      : [],
+    auspiciousDirections: Array.isArray(advanced?.metaphysicalAnalysis?.auspiciousDirections)
+      ? advanced.metaphysicalAnalysis.auspiciousDirections
+      : [],
+    guidance: advanced?.metaphysicalAnalysis?.guidance ?? '',
+  },
+};
