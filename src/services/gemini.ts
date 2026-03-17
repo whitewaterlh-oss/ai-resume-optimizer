@@ -1,7 +1,13 @@
 import { GoogleGenAI, Type, Part } from '@google/genai';
 import { ResumeAnalysisResult, FileData } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!apiKey) {
+  console.error('Missing VITE_GEMINI_API_KEY');
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 export async function analyzeResume(
   resumeText: string,
